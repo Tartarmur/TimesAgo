@@ -11,7 +11,7 @@ fun main() {
     val checkTime = LocalTime.now() // обойти Т символ - разбил на две части дату и время
     val nowDate = (LocalDate.now().toString())
     val nowTime = (LocalTime.now().toString())
-    val lastEnter = "03.05.2024 22:05:31"
+    val lastEnter = "13.05.2024 22:05:31"
     val dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
     val lastEnterParse = LocalDateTime.parse(lastEnter, dateFormat)
     val yearLastEnter = lastEnterParse.year
@@ -22,6 +22,8 @@ fun main() {
     val secondLastEnter = lastEnterParse.second
 
 
+    val ReallyDay = (checkDate.dayOfMonth).toInt()*24+(checkTime.hour).toInt() - ((dayLastEnter.toInt()*24)+hourLastEnter.toInt())
+    println(ReallyDay) // научил программу различать, когда сутки действительно прошли
     val difDays = checkDate.dayOfMonth - dayLastEnter // использую другую формулу, чтобы не было ошибки с текущей датой
     println(difDays) // для проверки разницы дней
     val difHours = (checkTime.minusHours((24-(24-hourLastEnter)).toLong())).hour
@@ -36,10 +38,10 @@ fun main() {
     val transferHours = difHours.toString()
     val transferMinutes = difMinutes.toString()
     val transferSeconds = difSeconds.toString()
-    val result = agoToText(transferDays,transferHours, transferMinutes, transferSeconds)
+    val result = agoToText(transferDays,transferHours, transferMinutes, transferSeconds, ReallyDay)
 }
 
-fun agoToText(differenceDays : String, differenceHours : String, differenceMinutes: String, differenceSeconds: String) {
+fun agoToText(differenceDays : String, differenceHours : String, differenceMinutes: String, differenceSeconds: String, ReallyDay: Int) {
     val differenceDaysL = differenceDays.toInt() // нужно одновременно и String (текст) и Long/int (число) для сравнений
     val differenceHoursL = differenceHours.toInt()
     val differenceMinutesI = differenceMinutes.toInt()
@@ -49,11 +51,11 @@ fun agoToText(differenceDays : String, differenceHours : String, differenceMinut
     val fourthCharHour = '4'
 
          when { // проверка по суткам
-            differenceDaysL >= 3 -> println("Был давно")
-            differenceDaysL >= 2 &&  differenceDaysL < 3-> println("Был позавчера")
-            differenceDaysL >= 1 && differenceDaysL < 2 && differenceHoursL == 24-> println("Был вчера")
+            differenceDaysL > 3 -> println("Был давно")
+            differenceDaysL <= 3 &&  differenceDaysL > 2 -> println("Был позавчера")
+            differenceDaysL <= 2 && differenceDaysL >= 1 && ReallyDay >= 24  -> println("Был вчера")
 
-            differenceDaysL <= 1 && differenceHoursL < 24-> when { // проверка по часам
+            differenceDaysL <= 1 && ReallyDay < 24 -> when { // проверка по часам
 
                 differenceHoursL in 5..20 -> println("Был " + differenceHours + " часов назад")
                 differenceHoursL < 24 && differenceHoursL > 1 && differenceHours.length > 1 &&
